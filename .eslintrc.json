@@ -1,0 +1,44 @@
+{
+  "env": {
+    // For using 'document'
+    "browser": true,
+    // For using 'module'
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:jest/recommended",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "prettier/react",
+    "prettier/@typescript-eslint"
+  ],
+  "rules": {
+    // Requires strict equality
+    "eqeqeq": "error",
+    // If functions are too long, break them up into smaller ones
+    "max-lines-per-function": [
+      "error",
+      {
+        "max": 35
+      }
+    ],
+    // Linting shouldn't break on this, but we also want to discourage using console logging
+    "no-console": "warn",
+    // Requires the displayName property to be set, not ideal for stateless components
+    "react/display-name": 0,
+    // Requires 'public' before public methods
+    "@typescript-eslint/explicit-member-accessibility": 0,
+    // Disallows snake casing, which is often used in options objects (eg. "include_docs")
+    "@typescript-eslint/camelcase": 0
+  },
+  "settings": {
+    "react": {
+      // Define this otherwise the rule produces a warning
+      "version": "detect"
+    }
+  }
+}

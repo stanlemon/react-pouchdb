@@ -1,0 +1,70 @@
+{
+  "name": "@stanlemon/react-pouchdb-example",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An example using React PouchDB components.",
+  "author": "Stan Lemon <stanlemon@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:stanlemon/react-pouchdb-document.git"
+  },
+  "scripts": {
+    "start": "parcel --out-dir ./out/ index.html",
+    "test": "jest",
+    "lint": "eslint --ext js,jsx,ts,tsx ./src/",
+    "eslint-check": "eslint --print-config . | eslint-config-prettier-check"
+  },
+  "jest": {
+    "roots": [
+      "./src/"
+    ],
+    "setupFilesAfterEnv": [
+      "jest-enzyme"
+    ],
+    "testEnvironment": "enzyme",
+    "testEnvironmentOptions": {
+      "enzymeAdapter": "react16"
+    },
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)?$": "babel-jest"
+    }
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.121",
+    "@types/pouchdb": "^6.3.3",
+    "@types/react": "^16.8.5",
+    "@types/react-dom": "^16.8.2",
+    "pouchdb": "^7.0.0",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-proposal-class-properties": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/enzyme": "^3.9.0",
+    "@types/jest": "^24.0.9",
+    "@types/parcel-env": "0.0.0",
+    "@typescript-eslint/eslint-plugin": "^1.4.2",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^24.1.0",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.10.0",
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-jest": "^22.3.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react": "^7.12.4",
+    "jest": "^24.1.0",
+    "jest-environment-enzyme": "^7.0.1",
+    "jest-enzyme": "^7.0.1",
+    "parcel-bundler": "^1.11.0",
+    "pouchdb-adapter-memory": "^7.0.0",
+    "prettier": "^1.16.4",
+    "typescript": "^3.3.3333",
+    "wait-for-expect": "^1.1.0"
+  }
+}
