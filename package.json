@@ -14,6 +14,9 @@
     "url": "git@github.com:stanlemon/react-pouchdb-document.git"
   },
   "main": "./dist/index.js",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "test": "jest",
     "build": "tsc -d",
