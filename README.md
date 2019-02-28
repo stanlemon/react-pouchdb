@@ -9,7 +9,7 @@ React components for interacting with [PouchDB](https://pouchdb.com) documents. 
 Simply run:
 
 ```shell
-npm install --save react-pouchdb pouchdb
+npm install --save @stanlemon/react-pouchdb pouchdb
 ```
 
 ...and profit!
