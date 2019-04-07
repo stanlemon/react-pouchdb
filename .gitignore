@@ -18,3 +18,6 @@ __snapshots__/
 
 ## Jest Coverage
 coverage/
+
+## Visual Studio Code
+.vscode

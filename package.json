@@ -1,6 +1,6 @@
 {
   "name": "@stanlemon/react-pouchdb",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React components for interacting with PouchDB.",
   "keywords": [
     "react",
@@ -19,6 +19,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "watch": "tsc -w",
     "build": "tsc -d",
     "lint": "eslint --ext js,jsx,ts,tsx ./src/",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check"
@@ -67,7 +68,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.12.4",
     "jest": "^24.1.0",
-    "jest-environment-enzyme": "^7.0.1",
+    "jest-environment-enzyme": "^7.0.2",
     "jest-enzyme": "^7.0.1",
     "pouchdb": "^7.0.0",
     "pouchdb-adapter-memory": "^7.0.0",

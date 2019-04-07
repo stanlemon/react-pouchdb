@@ -63,10 +63,16 @@ export class Database extends React.Component<DatabaseProps> {
     super(props);
 
     // Create our new local database
-    this.db =
-      this.props.database instanceof PouchDB
-        ? this.props.database
-        : new PouchDB(this.props.database as string);
+    if (
+      typeof this.props.database === "object" &&
+      this.props.database.constructor.name === "PouchDB"
+    ) {
+      console.log("Database property is an instance of PouchDB");
+
+      this.db = this.props.database as PouchDB.Database;
+    } else {
+      this.db = new PouchDB(this.props.database as string);
+    }
   }
 
   // eslint-disable-next-line max-lines-per-function
@@ -76,7 +82,7 @@ export class Database extends React.Component<DatabaseProps> {
     }
 
     // Replicate to a remote database
-    this.sync = this.db.sync(this.props.remote, { live: true });
+    this.sync = this.db.sync(this.props.remote, { retry: true, live: true });
 
     this.changes = this.db
       .changes({
