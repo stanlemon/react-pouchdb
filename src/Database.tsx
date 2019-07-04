@@ -24,7 +24,7 @@ interface DatabaseProps {
   remote?: string | PouchDB.Database;
 }
 
-export interface DatabaseContext {
+export interface DatabaseContextType {
   db: PouchDB.Database;
   watchDocument(id: string, component: Document): void;
 }
@@ -35,7 +35,7 @@ export interface Doc {
   _rev: string;
 }
 
-export const Context = React.createContext<DatabaseContext>(null);
+export const DatabaseContext = React.createContext<DatabaseContextType>(null);
 
 /**
  * Component for using PouchDB with React components. In order to wrap a component in a <Document />
@@ -130,7 +130,7 @@ export class Database extends React.Component<DatabaseProps> {
   }
 
   render(): React.ReactNode {
-    const contextValue: DatabaseContext = {
+    const contextValue: DatabaseContextType = {
       db: this.db,
       watchDocument: (id: string, component: Document) => {
         this.watching.push({ id, component });
@@ -138,9 +138,9 @@ export class Database extends React.Component<DatabaseProps> {
     };
 
     return (
-      <Context.Provider value={contextValue}>
+      <DatabaseContext.Provider value={contextValue}>
         {this.props.children}
-      </Context.Provider>
+      </DatabaseContext.Provider>
     );
   }
 }

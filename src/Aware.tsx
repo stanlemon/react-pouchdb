@@ -1,13 +1,13 @@
 import * as React from "react";
 
-import { Context } from "./Database";
+import { DatabaseContext } from "./Database";
 
 interface Props {
   children: React.ReactChild;
 }
 
 export class Aware extends React.Component<Props, {}> {
-  static contextType = Context;
+  static contextType = DatabaseContext;
 
   render(): React.ReactNode {
     const db = this.context.db;

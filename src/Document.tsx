@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Context, DatabaseContext, Doc } from "./Database";
+import { DatabaseContext, DatabaseContextType, Doc } from "./Database";
 import { merge } from "lodash";
 
 export interface DocumentIdProps {
@@ -40,6 +40,12 @@ export interface PuttableProps {
   putDocument: putDocument;
 }
 
+export interface DocumentContextType {
+  id: string;
+}
+
+export const DocumentContext = React.createContext<DocumentContextType>(null);
+
 export function withDocument<P>(
   id: string,
   WrappedComponent: React.ComponentType<P & PuttableProps>
@@ -60,11 +66,11 @@ export function withDocument<P>(
 export class Document extends React.PureComponent<
   DocumentIdProps & DocumentProps,
   DocumentState,
-  DatabaseContext
+  DatabaseContextType
 > {
-  static contextType = Context;
+  static contextType = DatabaseContext;
 
-  context!: React.ContextType<typeof Context>;
+  context!: React.ContextType<typeof DatabaseContext>;
 
   static defaultProps: DocumentProps = {
     onConflict(yours: object, theirs: object): {} {
@@ -267,6 +273,14 @@ export class Document extends React.PureComponent<
       throw new Error("A component or children must be specified.");
     }
 
-    return React.cloneElement(child, props);
+    const contextValue: DocumentContextType = {
+      id: this.props.id
+    };
+
+    return (
+      <DocumentContext.Provider value={contextValue}>
+        {React.cloneElement(child, props)}
+      </DocumentContext.Provider>
+    );
   }
 }
