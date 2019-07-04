@@ -24,6 +24,8 @@ export interface DocumentState {
   initialized: boolean;
 }
 
+export type putDocument = (data: object) => void;
+
 /**
  * Wrapped components need a put property.
  */
@@ -35,7 +37,7 @@ export interface PuttableProps {
    *
    * @param data Data to be put in both state and PouchDB.
    */
-  putDocument(data: object): void;
+  putDocument: putDocument;
 }
 
 export function withDocument<P>(
