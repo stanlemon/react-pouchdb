@@ -1,7 +1,6 @@
 import * as React from "react";
 import { DatabaseContext, DatabaseContextType, Doc } from "./Database";
-import { merge } from "lodash";
-
+import merge from "lodash/merge";
 export interface DocumentIdProps {
   id: string;
 }

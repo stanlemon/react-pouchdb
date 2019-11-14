@@ -21,3 +21,6 @@ coverage/
 
 ## Visual Studio Code
 .vscode
+
+## Rollup
+.rts2_cache_cjs
