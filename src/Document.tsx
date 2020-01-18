@@ -53,7 +53,7 @@ export function withDocument<P>(
     <Document id={id} loading={props.loading}>
       <WrappedComponent
         // This property will get overwritten by <Document />
-        putDocument={() => {
+        putDocument={(): void => {
           /* do nothing */
         }}
         {...props}
@@ -200,7 +200,7 @@ export class Document extends React.PureComponent<
       .catch(
         (err: { status: number; message: string; reason: string }): void => {
           // eslint-disable-next-line no-console
-          console.log("An error occurred while putting a document", err);
+          console.error("An error occurred while putting a document", err);
 
           if (err.status === 409) {
             // Handle 'immediate' conflict
@@ -219,7 +219,6 @@ export class Document extends React.PureComponent<
 
   private _putDocument = (data: object): Promise<PouchDB.Core.Response> => {
     return this.context.db.put(data).then((response: PouchDB.Core.Response) => {
-      console.log(response);
       this.setRevision(response.rev);
       return response;
     });

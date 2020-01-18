@@ -89,6 +89,9 @@ pouchdb-server -m
 ```
 _The `-m` attribute stores data in memory only, if you would rather use sql do `npm install -g pouchdb-adapter-node-websql` and then use the `--sqlite` argument when starting the `pouchdb-server` instance instead of `-m`._
 
+## Debug
+
+If you want to see every change that comes from CouchDB you can set `debug={true}` on the `<Database/>` component and they will be logged out to the console. _Do not do this in production!_
 
 ## Build & Test
 

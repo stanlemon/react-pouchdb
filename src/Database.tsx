@@ -8,6 +8,8 @@ interface DatabaseProps {
    */
   children: React.ReactNode;
 
+  debug?: boolean;
+
   /**
    * (Optional) Name or instance of the local PouchDB instance.
    *
@@ -43,6 +45,7 @@ export const DatabaseContext = React.createContext<DatabaseContextType>(null);
  */
 export class Database extends React.Component<DatabaseProps> {
   static defaultProps = {
+    debug: false,
     database: "local"
   };
 
@@ -67,8 +70,6 @@ export class Database extends React.Component<DatabaseProps> {
       typeof this.props.database === "object" &&
       this.props.database.constructor.name === "PouchDB"
     ) {
-      console.log("Database property is an instance of PouchDB");
-
       this.db = this.props.database as PouchDB.Database;
     } else {
       this.db = new PouchDB(this.props.database as string);
@@ -91,8 +92,10 @@ export class Database extends React.Component<DatabaseProps> {
         include_docs: true
       })
       .on("change", (change: PouchDB.Core.ChangesResponseChange<Doc>) => {
-        // eslint-disable-next-line no-console
-        console.log("Received change = ", change);
+        if (this.props.debug === true) {
+          // eslint-disable-next-line no-console
+          console.log("Received change = ", change);
+        }
 
         this.watching.forEach(watch => {
           // if (change.deleted === true) { /* handle deletion /* }

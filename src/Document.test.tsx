@@ -6,6 +6,7 @@ import waitForExpect from "wait-for-expect";
 import { Database } from "./Database";
 import { Document, withDocument, PuttableProps } from "./Document";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 PouchDB.plugin(require("pouchdb-adapter-memory"));
 
 class TestComponent extends React.Component<
@@ -15,7 +16,7 @@ class TestComponent extends React.Component<
     value: ""
   };
 
-  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     this.props.putDocument({ value: e.target.value });
   };
 
@@ -52,9 +53,7 @@ async function getPouchDb(): Promise<PouchDB.Database> {
   return db;
 }
 
-test("withDocument() renders wrapped component", async (done): Promise<
-  void
-> => {
+test("withDocument() renders wrapped component", async (): Promise<void> => {
   // Add some initial state to our document, this should get loaded into the component
   const db = await getPouchDb();
 
@@ -94,11 +93,9 @@ test("withDocument() renders wrapped component", async (done): Promise<
   expect(wrapper.find(TestComponent).prop("_rev")).toBe(undefined);
 
   wrapper.unmount();
-
-  done();
 });
 
-test("withDocument() initializes with no existing document", async (done): Promise<
+test("withDocument() initializes with no existing document", async (): Promise<
   void
 > => {
   const db = await getPouchDb();
@@ -117,13 +114,9 @@ test("withDocument() initializes with no existing document", async (done): Promi
   }, 1000);
 
   wrapper.unmount();
-
-  done();
 });
 
-test("withDocument() updates document in PouchDB", async (done): Promise<
-  void
-> => {
+test("withDocument() updates document in PouchDB", async (): Promise<void> => {
   const db = await getPouchDb();
 
   const Test = withDocument("test", TestComponent);
@@ -162,11 +155,9 @@ test("withDocument() updates document in PouchDB", async (done): Promise<
   expect(wrapper.find("input#value").props().value).toBe(newValue);
 
   wrapper.unmount();
-
-  done();
 });
 
-test("withDocument() receives changes from a remote db", async (done): Promise<
+test("withDocument() receives changes from a remote db", async (): Promise<
   void
 > => {
   // Add some initial state to our document, this should get loaded into the component
@@ -205,6 +196,4 @@ test("withDocument() receives changes from a remote db", async (done): Promise<
   expect(wrapper.find(TestComponent).prop("_rev")).toBe(undefined);
 
   wrapper.unmount();
-
-  done();
 });
