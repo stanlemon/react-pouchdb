@@ -29,9 +29,6 @@
     "roots": [
       "./src/"
     ],
-    "setupFilesAfterEnv": [
-      "jest-enzyme"
-    ],
     "testEnvironment": "enzyme",
     "testEnvironmentOptions": {
       "enzymeAdapter": "react16"
@@ -70,7 +67,6 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.19.0",
     "jest": "^25.2.3",
-    "jest-environment-enzyme": "^7.1.2",
     "jest-enzyme": "^7.1.2",
     "pouchdb": "^7.2.1",
     "pouchdb-adapter-memory": "^7.2.1",

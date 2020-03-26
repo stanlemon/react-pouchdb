@@ -1,10 +1,13 @@
 /* eslint-disable max-lines-per-function */
 import React from "react";
 import PouchDB from "pouchdb";
-import { mount } from "enzyme";
+import { configure, mount } from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
 import waitForExpect from "wait-for-expect";
 import { Database } from "./Database";
 import { Document, withDocument, PuttableProps } from "./Document";
+
+configure({ adapter: new Adapter() });
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 PouchDB.plugin(require("pouchdb-adapter-memory"));
@@ -13,7 +16,7 @@ class TestComponent extends React.Component<
   PuttableProps & { value?: string }
 > {
   static defaultProps = {
-    value: ""
+    value: "",
   };
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
