@@ -1,5 +1,7 @@
 # React PouchDB Components
 
+![Tests](https://github.com/stanlemon/react-pouchdb/workflows/Tests/badge.svg)
+
 React components for interacting with [PouchDB](https://pouchdb.com) documents.  These components can be used to wrap parts of an application and both load and save state to a document.  These components can be used both with React and React Native.
 
 *These components have been written in typescript.*
@@ -18,12 +20,11 @@ npm install --save @stanlemon/react-pouchdb pouchdb
 
 Check out the [example app](./example/), which creates several different counters using different forms of the `<Document />` component.
 
-You can run the app by doing:
+You can run the app by checking out the repository and doing:
 
 ```shell
-cd ./example/
 npm install
-npm start
+npm run example
 ```
 
 ## PouchDB Components
