@@ -33,8 +33,8 @@ export interface DatabaseContextType {
 
 export interface Doc {
   [key: string]: string;
-  _id: string;
-  _rev: string;
+  _id?: string;
+  _rev?: string;
 }
 
 export const DatabaseContext = React.createContext<DatabaseContextType>(null);
@@ -46,14 +46,14 @@ export const DatabaseContext = React.createContext<DatabaseContextType>(null);
 export class Database extends React.Component<DatabaseProps> {
   static defaultProps = {
     debug: false,
-    database: "local"
+    database: "local",
   };
 
   private db: PouchDB.Database;
 
-  private sync: PouchDB.Replication.Sync<{}>;
+  private sync: PouchDB.Replication.Sync<Partial<Doc>>;
 
-  private changes: PouchDB.Core.Changes<{}>;
+  private changes: PouchDB.Core.Changes<Partial<Doc>>;
 
   private watching: {
     // Id of the document to be watched
@@ -83,13 +83,16 @@ export class Database extends React.Component<DatabaseProps> {
     }
 
     // Replicate to a remote database
-    this.sync = this.db.sync(this.props.remote, { retry: true, live: true });
+    this.sync = this.db.sync(this.props.remote, {
+      retry: true,
+      live: true,
+    });
 
     this.changes = this.db
       .changes({
         conflicts: true,
         live: true,
-        include_docs: true
+        include_docs: true,
       })
       .on("change", (change: PouchDB.Core.ChangesResponseChange<Doc>) => {
         if (this.props.debug === true) {
@@ -97,7 +100,7 @@ export class Database extends React.Component<DatabaseProps> {
           console.log("Received change = ", change);
         }
 
-        this.watching.forEach(watch => {
+        this.watching.forEach((watch) => {
           // if (change.deleted === true) { /* handle deletion /* }
 
           // If this isn't the doc we're looking for, skip over it
@@ -110,8 +113,8 @@ export class Database extends React.Component<DatabaseProps> {
             this.db
               // Note: What happens when there is more than one conflict?
               .get(watch.id, { rev: change.doc._conflicts[0] })
-              .then((conflict: Doc) => {
-                watch.component.handleConflict(change.doc, conflict);
+              .then((conflict) => {
+                watch.component.handleConflict(change.doc, conflict as Doc);
               });
           }
 
@@ -137,7 +140,7 @@ export class Database extends React.Component<DatabaseProps> {
       db: this.db,
       watchDocument: (id: string, component: Document) => {
         this.watching.push({ id, component });
-      }
+      },
     };
 
     return (

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PuttableProps } from "./PouchDb";
+import { PuttableProps } from "../src/Document";
 
 type CounterProps = PuttableProps & {
   /**
@@ -15,7 +15,9 @@ export class Counter extends React.Component<CounterProps> {
   static defaultProps = {
     count: 0,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    putDocument: (state = {}): void => {}
+    putDocument: (state = {}): void => {
+      // do nothing.
+    },
   };
 
   /**

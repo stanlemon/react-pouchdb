@@ -1,6 +1,9 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { configure, mount, shallow } from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
 import { Counter } from "./Counter";
+
+configure({ adapter: new Adapter() });
 
 test("<Counter/> Defaults count to 0", (): void => {
   const wrapper = mount(<Counter />);

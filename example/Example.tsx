@@ -1,12 +1,12 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Database, Document, withDocument } from "../../src/";
+import { Database, Document, withDocument } from "../src";
 import { Counter } from "./Counter";
 
 /**
  * Example <Counter/> wrapped in PouchDB documents three different ways.
  */
-function Example(): React.ReactElement<{}> {
+function Example(): React.ReactElement {
   const style = { fontFamily: "San Francisco, Helvetica, Arial, sans-serif" };
   const WrappedCounter = withDocument("counter1", Counter);
   return (

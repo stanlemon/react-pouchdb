@@ -9,21 +9,21 @@ export interface DocumentIdProps {
  * Properties specific to the <Document/> component.
  */
 export interface DocumentProps {
-  onConflict?(yours: object, theirs: object): {};
-  loading?: React.ReactElement<{}>;
+  onConflict?(yours: Doc, theirs: Doc): Doc;
+  loading?: React.ReactNode;
   children?: React.ReactChild;
-  component?: React.ReactElement<{}>;
+  component?: React.ReactNode;
 }
 
 export interface DocumentState {
   rev: string | null;
 
-  data: {};
+  data: Doc;
 
   initialized: boolean;
 }
 
-export type putDocument = (data: object) => void;
+export type putDocument = (data: Doc) => void;
 
 /**
  * Wrapped components need a put property.
@@ -72,20 +72,28 @@ export class Document extends React.PureComponent<
   context!: React.ContextType<typeof DatabaseContext>;
 
   static defaultProps: DocumentProps = {
-    onConflict(yours: object, theirs: object): {} {
+    onConflict(yours: Doc, theirs: Doc): Doc {
       // Shallow merge objects, giving preference to yours
-      return merge({}, theirs, yours, (objValue: any, srcValue: any) => {
-        if (Array.isArray(objValue)) {
-          return objValue.concat(srcValue);
+      return merge(
+        {},
+        theirs,
+        yours,
+        (
+          objValue: Record<string, unknown>,
+          srcValue: Record<string, unknown>
+        ) => {
+          if (Array.isArray(objValue)) {
+            return objValue.concat(srcValue);
+          }
         }
-      });
-    }
+      );
+    },
   };
 
   state: DocumentState = {
     rev: null,
     initialized: false,
-    data: {}
+    data: {},
   };
 
   private db: PouchDB.Database;
@@ -103,7 +111,7 @@ export class Document extends React.PureComponent<
    */
   setRevision(rev: string): void {
     this.setState({
-      rev
+      rev,
     });
   }
 
@@ -111,13 +119,13 @@ export class Document extends React.PureComponent<
    * Set a document in the component state.
    * @param doc document from PouchDB.
    */
-  setDocument(doc: Partial<Doc> = {}): void {
+  setDocument(doc: Doc = {}): void {
     // We don't want to put '_rev' or '_id' in our state data
     const data = this.extractDocument(doc);
 
     this.setState({
       initialized: true,
-      data
+      data,
     });
   }
 
@@ -125,11 +133,11 @@ export class Document extends React.PureComponent<
    * Given a document from PouchDB extract the _id and _rev fields from it.
    * @param doc pouchdb document
    */
-  private extractDocument(doc: Partial<Doc>): {} {
+  private extractDocument(doc: Doc): Doc {
     const data = Object.keys(doc)
       // Create a new key set that excludes these two keys
       .filter(
-        k =>
+        (k) =>
           k !== "_id" && k !== "_rev" && k !== "_deleted" && k !== "_conflicts"
       )
       // Create a new object using the keyset and the original values
@@ -150,19 +158,19 @@ export class Document extends React.PureComponent<
 
     this.context.db
       .get(this.props.id, { conflicts: true })
-      .then((doc: Doc) => {
+      .then((doc) => {
         // If a conflict exists, load the current and the conflict and pass it along to our handler
         if (doc._conflicts) {
           this.context.db
             // Note: What happens when there is more than one conflict?
             .get(this.props.id, { rev: doc._conflicts[0] })
-            .then((conflict: Doc) => {
-              this.handleConflict(doc, conflict);
+            .then((conflict) => {
+              this.handleConflict(doc as Doc, conflict as Doc);
             });
         }
 
         this.setRevision(doc._rev);
-        this.setDocument(doc);
+        this.setDocument(doc as Doc);
       })
       .catch(
         (err: { status: number; message: string; reason: string }): void => {
@@ -182,13 +190,13 @@ export class Document extends React.PureComponent<
    * It is passed along to the child component and is the primary method for properties
    * to trickle down to children.
    */
-  private putDocument = (data: object): void => {
+  private putDocument = (data: Doc): void => {
     // Set the internal state, this gives us the changes right away - we update the revision after the put
     this.setDocument(data);
 
     const putData = {
       ...{ _id: this.props.id, ...data },
-      ...(this.state.rev !== null ? { _rev: this.state.rev } : {})
+      ...(this.state.rev !== null ? { _rev: this.state.rev } : {}),
     };
 
     this.context.db
@@ -205,8 +213,8 @@ export class Document extends React.PureComponent<
           if (err.status === 409) {
             // Handle 'immediate' conflict
             // Do we still need to do this with our external handling?
-            this.context.db.get(this.props.id).then((original: Doc) => {
-              this.handleConflict(putData, original);
+            this.context.db.get(this.props.id).then((original) => {
+              this.handleConflict(putData, original as Doc);
             });
           }
           // This indicates a brand new document that we are creating, the document can be either 'missing' or 'deleted'
@@ -217,14 +225,14 @@ export class Document extends React.PureComponent<
       );
   };
 
-  private _putDocument = (data: object): Promise<PouchDB.Core.Response> => {
+  private _putDocument = (data: Doc): Promise<PouchDB.Core.Response> => {
     return this.context.db.put(data).then((response: PouchDB.Core.Response) => {
       this.setRevision(response.rev);
       return response;
     });
   };
 
-  handleConflict(yours: Partial<Doc>, theirs: Partial<Doc>): void {
+  handleConflict(yours: Doc, theirs: Doc): void {
     const winningRev = yours._rev > theirs._rev ? yours._rev : theirs._rev;
     const losingRev = yours._rev < theirs._rev ? yours._rev : theirs._rev;
     const result = this.extractDocument(this.props.onConflict(yours, theirs));
@@ -234,13 +242,17 @@ export class Document extends React.PureComponent<
       {
         _deleted: true,
         _id: this.props.id,
-        _rev: losingRev
+        _rev: losingRev,
       },
       { force: true } // Force the delete
     );
 
     // Put the new merge document in
-    this.context.db.put({ ...result, _id: this.props.id, _rev: winningRev });
+    this.context.db.put({
+      ...result,
+      _id: this.props.id,
+      _rev: winningRev,
+    });
 
     // Update our state after the conflict
     this.setDocument(result);
@@ -260,19 +272,19 @@ export class Document extends React.PureComponent<
     const props = {
       ...this.props,
       ...this.state.data,
-      putDocument: this.putDocument
+      putDocument: this.putDocument,
     };
 
     const child = (this.props.component
       ? this.props.component
-      : this.props.children) as React.ReactElement<{}>;
+      : this.props.children) as React.ReactElement;
 
     if (!child) {
       throw new Error("A component or children must be specified.");
     }
 
     const contextValue: DocumentContextType = {
-      id: this.props.id
+      id: this.props.id,
     };
 
     return (

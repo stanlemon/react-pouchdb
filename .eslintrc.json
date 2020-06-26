@@ -40,5 +40,6 @@
       // Define this otherwise the rule produces a warning
       "version": "detect"
     }
-  }
+  },
+  "ignorePatterns": ["**/out/*"]
 }

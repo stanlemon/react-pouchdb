@@ -8,7 +8,7 @@ dist/
 .cache/
 
 ## Parcel's output for serving
-out/
+example/out/
 
 ## PouchDB data
 local/

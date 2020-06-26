@@ -6,7 +6,7 @@ interface Props {
   children: React.ReactChild;
 }
 
-export class Aware extends React.Component<Props, {}> {
+export class Aware extends React.Component<Props> {
   static contextType = DatabaseContext;
 
   render(): React.ReactNode {

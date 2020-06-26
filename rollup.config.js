@@ -14,8 +14,8 @@ export default {
         "react-dom": "ReactDOM",
         pouchdb: "PouchDB",
         // Not having this throws a warning
-        "https://unpkg.com/es-react/react.js": "React"
-      }
+        "https://unpkg.com/es-react/react.js": "React",
+      },
     },
     {
       name: "ReactPouchDB",
@@ -24,16 +24,16 @@ export default {
       globals: {
         react: "React",
         "react-dom": "ReactDOM",
-        pouchdb: "PouchDB"
-      }
-    }
+        pouchdb: "PouchDB",
+      },
+    },
   ],
   external: [
     "react",
     "react-dom",
     "pouchdb",
     "https://unpkg.com/es-react/react.js",
-    "https://unpkg.com/pouchdb@7.1.1/dist/pouchdb.min.js"
+    "https://unpkg.com/pouchdb@7.1.1/dist/pouchdb.min.js",
   ],
   plugins: [
     resolve({ browser: true }),
@@ -43,7 +43,7 @@ export default {
       delimiters: ["", ""],
       'from "react"': 'from "https://unpkg.com/es-react/react.js"',
       'import PouchDB from "pouchdb"':
-        'import "https://unpkg.com/pouchdb@7.1.1/dist/pouchdb.min.js"'
-    })
-  ]
+        'import "https://unpkg.com/pouchdb@7.1.1/dist/pouchdb.min.js"',
+    }),
+  ],
 };
