@@ -1,6 +1,6 @@
 {
   "name": "@stanlemon/react-pouchdb",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "React components for interacting with PouchDB.",
   "keywords": [
     "react",
@@ -41,9 +41,6 @@
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)?$": "babel-jest"
     }
-  },
-  "dependencies": {
-    "lodash": "^4.17.15"
   },
   "peerDependencies": {
     "pouchdb": "^7.2.1",

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { DatabaseContext, DatabaseContextType, Doc } from "./Database";
-import merge from "lodash/merge";
+import merge from "./merge";
+
 export interface DocumentIdProps {
   id: string;
 }
@@ -74,19 +75,7 @@ export class Document extends React.PureComponent<
   static defaultProps: DocumentProps = {
     onConflict(yours: Doc, theirs: Doc): Doc {
       // Shallow merge objects, giving preference to yours
-      return merge(
-        {},
-        theirs,
-        yours,
-        (
-          objValue: Record<string, unknown>,
-          srcValue: Record<string, unknown>
-        ) => {
-          if (Array.isArray(objValue)) {
-            return objValue.concat(srcValue);
-          }
-        }
-      );
+      return merge(theirs, yours) as Doc;
     },
   };
 
