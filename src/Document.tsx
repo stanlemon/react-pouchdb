@@ -18,12 +18,12 @@ export interface DocumentProps {
 export interface DocumentState {
   rev: string | null;
 
-  data: Doc;
+  data: Record<string, unknown>;
 
   initialized: boolean;
 }
 
-export type putDocument = (data: Doc) => void;
+export type putDocument = (data: Record<string, unknown>) => void;
 
 /**
  * Wrapped components need a put property.
@@ -119,7 +119,7 @@ export class Document extends React.PureComponent<
    * Set a document in the component state.
    * @param doc document from PouchDB.
    */
-  setDocument(doc: Doc = {}): void {
+  setDocument(doc: Record<string, unknown> = {}): void {
     // We don't want to put '_rev' or '_id' in our state data
     const data = this.extractDocument(doc);
 
@@ -133,7 +133,9 @@ export class Document extends React.PureComponent<
    * Given a document from PouchDB extract the _id and _rev fields from it.
    * @param doc pouchdb document
    */
-  private extractDocument(doc: Doc): Doc {
+  private extractDocument(
+    doc: Record<string, unknown>
+  ): Record<string, unknown> {
     const data = Object.keys(doc)
       // Create a new key set that excludes these two keys
       .filter(
@@ -142,8 +144,8 @@ export class Document extends React.PureComponent<
       )
       // Create a new object using the keyset and the original values
       // Note that the [key]: string type here basically states that every key on the object is a string
-      .reduce((obj: { [key: string]: string }, key: string): {
-        [key: string]: string;
+      .reduce((obj: { [key: string]: unknown }, key: string): {
+        [key: string]: unknown;
       } => {
         obj[key] = doc[key];
         return obj;
@@ -190,7 +192,7 @@ export class Document extends React.PureComponent<
    * It is passed along to the child component and is the primary method for properties
    * to trickle down to children.
    */
-  private putDocument = (data: Doc): void => {
+  private putDocument = (data: Record<string, unknown>): void => {
     // Set the internal state, this gives us the changes right away - we update the revision after the put
     this.setDocument(data);
 
