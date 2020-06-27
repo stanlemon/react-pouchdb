@@ -1,9 +1,10 @@
 {
   "presets": [
-    [
-      "@babel/preset-env",
-      { "targets": { "browsers": "last 2 Chrome versions" } }
-    ],
+    ["@babel/preset-env", {
+      "bugfixes": true,
+      "useBuiltIns": false,
+      "shippedProposals": true
+    }],
     "@babel/preset-react",
     "@babel/preset-typescript"
   ]
