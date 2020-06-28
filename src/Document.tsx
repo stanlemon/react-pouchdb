@@ -10,6 +10,10 @@ export interface DocumentIdProps {
  * Properties specific to the <Document/> component.
  */
 export interface DocumentProps {
+  /**
+   * If debug is enabled there is additional logging to the console.
+   */
+  debug?: boolean;
   onConflict?(yours: Doc, theirs: Doc): Doc;
   loading?: React.ReactNode;
   children?: React.ReactChild;
@@ -73,6 +77,7 @@ export class Document extends React.PureComponent<
   context!: React.ContextType<typeof DatabaseContext>;
 
   static defaultProps: DocumentProps = {
+    debug: false,
     onConflict(yours: Doc, theirs: Doc): Doc {
       // Shallow merge objects, giving preference to yours
       return merge(theirs, yours) as Doc;
@@ -86,6 +91,13 @@ export class Document extends React.PureComponent<
   };
 
   private db: PouchDB.Database;
+
+  private log(...args: unknown[]): void {
+    if (this.props.debug) {
+      // eslint-disable-next-line no-console
+      console.log.apply(args);
+    }
+  }
 
   /**
    * Get the revision of the current PouchDB document.
@@ -224,6 +236,8 @@ export class Document extends React.PureComponent<
   };
 
   handleConflict(yours: Doc, theirs: Doc): void {
+    this.log("Document Conflict (yours, theirs)", yours, theirs);
+
     const winningRev = yours._rev > theirs._rev ? yours._rev : theirs._rev;
     const losingRev = yours._rev < theirs._rev ? yours._rev : theirs._rev;
     const result = this.extractDocument(this.props.onConflict(yours, theirs));

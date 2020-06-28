@@ -8,7 +8,10 @@ interface DatabaseProps {
    */
   children: React.ReactNode;
 
-  debug?: boolean;
+  /**
+   * If debug is enabled there is additional logging to the console.
+   */
+  debug: boolean;
 
   /**
    * (Optional) Name or instance of the local PouchDB instance.
@@ -76,6 +79,13 @@ export class Database extends React.Component<DatabaseProps> {
     }
   }
 
+  private log(...args: unknown[]): void {
+    if (this.props.debug) {
+      // eslint-disable-next-line no-console
+      console.log.apply(args);
+    }
+  }
+
   // eslint-disable-next-line max-lines-per-function
   componentDidMount(): void {
     if (!this.props.remote) {
@@ -95,10 +105,7 @@ export class Database extends React.Component<DatabaseProps> {
         include_docs: true,
       })
       .on("change", (change: PouchDB.Core.ChangesResponseChange<Doc>) => {
-        if (this.props.debug === true) {
-          // eslint-disable-next-line no-console
-          console.log("Received change = ", change);
-        }
+        this.log("Received change = ", change);
 
         this.watching.forEach((watch) => {
           // if (change.deleted === true) { /* handle deletion /* }
