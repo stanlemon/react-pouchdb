@@ -95,7 +95,7 @@ export class Document extends React.PureComponent<
   private log(...args: unknown[]): void {
     if (this.props.debug) {
       // eslint-disable-next-line no-console
-      console.log.apply(args);
+      console.log.apply(null, args);
     }
   }
 
