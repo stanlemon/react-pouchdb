@@ -6,10 +6,14 @@ export default function merge(
   const c = { ...a };
 
   Object.entries(b).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
+    // If both sides are arrays merge them
+    if (a && Array.isArray(a[key]) && Array.isArray(value)) {
       // TODO: Need to deep merge objects?
       c[key] = [...(a[key] as []), ...value];
-    } else if (isObject(value as Record<string, unknown>)) {
+    } else if (
+      !Array.isArray(value) &&
+      isObject(value as Record<string, unknown>)
+    ) {
       c[key] = merge(
         a[key] as Record<string, unknown>,
         b[key] as Record<string, unknown>
