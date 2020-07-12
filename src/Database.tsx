@@ -86,7 +86,10 @@ export class Database extends React.Component<DatabaseProps> {
     }
   }
 
-  // eslint-disable-next-line max-lines-per-function
+  componentDidMount(): void {
+    this.setupSync();
+  }
+
   componentDidUpdate(prevProps: DatabaseProps): void {
     // This is to avoid setting up syncing over and over again
     if (prevProps.remote) {
@@ -96,6 +99,11 @@ export class Database extends React.Component<DatabaseProps> {
       return;
     }
 
+    this.setupSync();
+  }
+
+  // eslint-disable-next-line max-lines-per-function
+  private setupSync(): void {
     if (!this.props.remote) {
       this.log("Remote database is not setup, skipping sync setup");
       return;
