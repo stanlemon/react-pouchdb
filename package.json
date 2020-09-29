@@ -82,7 +82,6 @@
     "html-webpack-plugin": "^4.5.0",
     "jest": "^26.1.0",
     "jest-enzyme": "^7.1.2",
-    "parcel": "^1.12.4",
     "pouchdb": "^7.2.1",
     "pouchdb-adapter-memory": "^7.2.1",
     "prettier": "^2.0.5",
