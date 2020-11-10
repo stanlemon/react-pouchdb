@@ -1,22 +1,16 @@
 import React from "react";
-import { configure, mount } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
-
-configure({ adapter: new Adapter() });
+import { render, screen } from '@testing-library/react'
 
 import { Database } from "./Database";
 
-test("<Database/> renders children", (): void => {
+test("<Database/> renders children", async () => {
   const text = "Hello World";
-  const wrapper = mount(
+  render(
     <Database>
       <h1>{text}</h1>
     </Database>
   );
 
-  expect(wrapper.props().database).toBe(Database.defaultProps.database);
-
-  expect(wrapper.children().length).toBe(1);
-
-  expect(wrapper.children().contains(text)).toBe(true);
+  const items = await screen.findAllByText(text)
+  expect(items).toHaveLength(1)
 });
