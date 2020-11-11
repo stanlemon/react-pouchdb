@@ -1,33 +1,20 @@
 import React from "react";
-import { configure, mount, shallow } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
 import { Counter } from "./Counter";
-
-configure({ adapter: new Adapter() });
+import { render, fireEvent, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 test("<Counter/> Defaults count to 0", (): void => {
-  const wrapper = mount(<Counter />);
+  render(<Counter />);
 
-  expect(wrapper.props().count).toBe(0);
+  expect(screen.getByTestId("current-count")).toHaveTextContent("0");
 });
 
 test("<Counter/> count can be set on the component", (): void => {
   const expected = 101;
 
-  const wrapper = mount(<Counter count={expected} />);
+  render(<Counter count={expected} />);
 
-  expect(wrapper.props().count).toBe(expected);
-});
-
-test("<Counter/> Renders the current count", (): void => {
-  const count = 99;
-
-  const wrapper = mount(<Counter count={count} />);
-
-  // Stick our number is a string so we can check for it in the component
-  const countStr = `${count}`;
-
-  expect(wrapper.contains(countStr)).toBeTruthy();
+  expect(screen.getByTestId("current-count")).toHaveTextContent(`${expected}`);
 });
 
 test("<Counter/> can be incremented with a button", (): void => {
@@ -37,9 +24,11 @@ test("<Counter/> can be incremented with a button", (): void => {
     state = count;
   };
 
-  const wrapper = shallow(<Counter putDocument={putDocument} />);
+  render(<Counter putDocument={putDocument} />);
 
-  wrapper.find("button#increment").simulate("click");
+  expect(screen.getByTestId("current-count")).toHaveTextContent("0");
+
+  fireEvent.click(screen.getByRole("button", { name: "Increment +" }));
 
   expect(state).toBe(1);
 });
@@ -51,9 +40,11 @@ test("<Counter/> can be decremented with a button", (): void => {
     state = count;
   };
 
-  const wrapper = shallow(<Counter count={10} putDocument={putDocument} />);
+  render(<Counter count={10} putDocument={putDocument} />);
 
-  wrapper.find("button#decrement").simulate("click");
+  expect(screen.getByTestId("current-count")).toHaveTextContent("10");
+
+  fireEvent.click(screen.getByRole("button", { name: "Decrement -" }));
 
   expect(state).toBe(9);
 });

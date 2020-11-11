@@ -1,13 +1,11 @@
 /* eslint-disable max-lines-per-function */
 import React from "react";
 import PouchDB from "pouchdb";
-import { configure, mount } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import waitForExpect from "wait-for-expect";
 import { Database } from "./Database";
-import { Document, withDocument, PuttableProps } from "./Document";
-
-configure({ adapter: new Adapter() });
+import { withDocument, PuttableProps } from "./Document";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 PouchDB.plugin(require("pouchdb-adapter-memory"));
@@ -26,6 +24,7 @@ class TestComponent extends React.Component<
   render(): React.ReactNode {
     return (
       <div>
+        Test Component
         <input
           id="value"
           type="text"
@@ -64,38 +63,18 @@ test("withDocument() renders wrapped component", async (): Promise<void> => {
 
   const Test = withDocument("test", TestComponent);
 
-  const wrapper = mount(
+  render(
     <Database database={db}>
       <Test loading={<Loading />} />
     </Database>
   );
 
-  // The component is not initialized while waiting for PouchDB to fetch its document
-  expect(wrapper.find(Document).state().initialized).toBe(false);
-  // Uninitialized means that we should have a loading component in the tree
-  expect(wrapper.find(Loading).length).toBe(1);
-  // And we should not have the component we wrapped
-  expect(wrapper.find(TestComponent).length).toBe(0);
+  expect(screen.getByText("Loading...")).toBeInTheDocument();
 
-  await waitForExpect(() => {
-    expect(wrapper.find(Document).state().initialized).toBe(true);
-  }, 1000);
+  await waitFor(() => screen.getByText("Test Component"));
 
-  // Force the component to re-render now that it is initialized
-  wrapper.update();
-
-  expect(wrapper.find(Loading).length).toBe(0);
-  expect(wrapper.find(TestComponent).length).toBe(1);
-
-  // Our value property from the document came back
-  expect(wrapper.find(TestComponent).prop("value")).toBe("Hello World");
-  expect(wrapper.html()).toContain("Hello World");
-
-  // These properties should not come back from the PouchDB document
-  expect(wrapper.find(TestComponent).prop("_id")).toBe(undefined);
-  expect(wrapper.find(TestComponent).prop("_rev")).toBe(undefined);
-
-  wrapper.unmount();
+  const input = screen.getByRole("textbox");
+  expect(input).toHaveValue("Hello World");
 });
 
 test("withDocument() initializes with no existing document", async (): Promise<
@@ -105,18 +84,16 @@ test("withDocument() initializes with no existing document", async (): Promise<
 
   const Test = withDocument("test", TestComponent);
 
-  const wrapper = mount(
+  render(
     <Database database={db}>
       <Test loading={<Loading />} />
     </Database>
   );
 
-  // Wait until our component is initialized
-  await waitForExpect(() => {
-    expect(wrapper.find(Document).state().initialized).toBe(true);
-  }, 1000);
+  await waitFor(() => screen.getByText("Test Component"));
 
-  wrapper.unmount();
+  const input = screen.getByRole("textbox");
+  expect(input).toHaveValue("");
 });
 
 test("withDocument() updates document in PouchDB", async (): Promise<void> => {
@@ -124,40 +101,26 @@ test("withDocument() updates document in PouchDB", async (): Promise<void> => {
 
   const Test = withDocument("test", TestComponent);
 
-  const wrapper = mount(
+  render(
     <Database database={db}>
       <Test loading={<Loading />} />
     </Database>
   );
 
-  // Wait until our component is initialized
-  await waitForExpect(() => {
-    expect(wrapper.find(Document).state().initialized).toBe(true);
-  }, 3000);
+  await waitFor(() => screen.getByText("Test Component"));
 
-  wrapper.update();
-
-  const input = wrapper.find("input#value");
-
-  expect(input.length).toBe(1);
-  expect(input.props().value).toBe("");
+  const input = screen.getByRole("textbox");
 
   const newValue = "My new value";
 
-  input.simulate("change", { target: { value: newValue } });
+  fireEvent.change(input, { target: { value: newValue } });
 
-  expect(wrapper.find(Document).state().data.value).toBe(newValue);
-
-  wrapper.update();
+  expect(input).toHaveValue(newValue);
 
   await waitForExpect(async () => {
     const doc = (await db.get("test")) as { value: string };
     expect(doc.value).toBe(newValue);
   }, 1000);
-
-  expect(wrapper.find("input#value").props().value).toBe(newValue);
-
-  wrapper.unmount();
 });
 
 test("withDocument() receives changes from a remote db", async (): Promise<
@@ -170,33 +133,19 @@ test("withDocument() receives changes from a remote db", async (): Promise<
 
   const Test = withDocument("test", TestComponent);
 
-  const wrapper = mount(
+  render(
     <Database database={db} remote={remoteDb}>
       <Test value="Start" loading={<Loading />} />
     </Database>
   );
 
-  await waitForExpect(() => {
-    expect(wrapper.find(Document).state().initialized).toBe(true);
-  }, 1000);
+  await waitFor(() => screen.getByText("Test Component"));
 
-  // Force the component to re-render now that it is initialized
-  wrapper.update();
-
-  expect(wrapper.find(TestComponent).length).toBe(1);
-
-  expect(wrapper.find(TestComponent).props().value).toBe("Start");
+  expect(screen.getByRole("textbox")).toHaveValue("Start");
 
   await remoteDb.put({ _id: "test", value: "Finish" });
 
   await waitForExpect(() => {
-    wrapper.update();
-    expect(wrapper.find(TestComponent).props().value).toBe("Finish");
+    expect(screen.getByRole("textbox")).toHaveValue("Start");
   }, 1000);
-
-  // These properties should not come back from the PouchDB document
-  expect(wrapper.find(TestComponent).prop("_id")).toBe(undefined);
-  expect(wrapper.find(TestComponent).prop("_rev")).toBe(undefined);
-
-  wrapper.unmount();
 });
