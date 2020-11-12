@@ -1,7 +1,7 @@
 pull_request_rules:
   - name: automatic merge on CI success
     conditions:
-      - author=dependabot-preview[bot]
+      - author~=^dependabot.*\[bot\]
       - check-success=test
     actions:
       merge:
