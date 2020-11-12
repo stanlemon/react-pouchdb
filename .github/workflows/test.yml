@@ -1,21 +1,37 @@
-name: Tests
-
+name: Test
 on: [push]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
+        with:
+          persist-credentials: false
 
-    - name: Install modules
-      run: npm install
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm 
+          key: ${{ runner.OS }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-npm-
+            ${{ runner.OS }}-
 
-    - name: Lint
-      run: npm run lint
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1.4.2
+        with:
+          node-version: '14'
 
-    - name: Build (for typescript errors)
-      run: npm run build
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Run tests
-      run: npm run test
+      - name: Lint code
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm run test
