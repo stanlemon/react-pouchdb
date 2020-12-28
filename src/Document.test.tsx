@@ -77,9 +77,7 @@ test("withDocument() renders wrapped component", async (): Promise<void> => {
   expect(input).toHaveValue("Hello World");
 });
 
-test("withDocument() initializes with no existing document", async (): Promise<
-  void
-> => {
+test("withDocument() initializes with no existing document", async (): Promise<void> => {
   const db = await getPouchDb();
 
   const Test = withDocument("test", TestComponent);
@@ -123,9 +121,7 @@ test("withDocument() updates document in PouchDB", async (): Promise<void> => {
   }, 1000);
 });
 
-test("withDocument() receives changes from a remote db", async (): Promise<
-  void
-> => {
+test("withDocument() receives changes from a remote db", async (): Promise<void> => {
   // Add some initial state to our document, this should get loaded into the component
   const db = await getPouchDb();
 
