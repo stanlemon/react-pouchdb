@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0 (December 29, 2020)
+
+* Dependency updates and cleanup.
+
 ## 0.1.15 (July 12, 2020)
 
 * Fixed not setting up sync on mount (still need to do that!).
