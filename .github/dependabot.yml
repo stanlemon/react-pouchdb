@@ -4,7 +4,11 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/"
-    update_schedule: "live"
-    allowed_updates:
-      - match:
-          update_type: "security"
+    schedule:
+      # Check for updates managed once a week
+      interval: "weekly"
+      day: "thursday"
+      time: "05:00"
+      timezone: "America/Indiana/Indianapolis"
+    versioning-strategy: increase-if-necessary
+    open-pull-requests-limit: 20
