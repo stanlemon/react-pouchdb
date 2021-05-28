@@ -7,6 +7,8 @@ import waitForExpect from "wait-for-expect";
 import { Database } from "./Database";
 import { withDocument, PuttableProps } from "./Document";
 
+window.setImmediate = window.setTimeout;
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 PouchDB.plugin(require("pouchdb-adapter-memory"));
 

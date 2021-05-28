@@ -280,9 +280,9 @@ export class Document extends React.PureComponent<
       putDocument: this.putDocument,
     };
 
-    const child = (this.props.component
-      ? this.props.component
-      : this.props.children) as React.ReactElement;
+    const child = (
+      this.props.component ? this.props.component : this.props.children
+    ) as React.ReactElement;
 
     if (!child) {
       throw new Error("A component or children must be specified.");
