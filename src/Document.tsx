@@ -74,8 +74,6 @@ export class Document extends React.PureComponent<
 > {
   static contextType = DatabaseContext;
 
-  context!: React.ContextType<typeof DatabaseContext>;
-
   static defaultProps: DocumentProps = {
     debug: false,
     onConflict(yours: Doc, theirs: Doc): Doc {
@@ -161,14 +159,14 @@ export class Document extends React.PureComponent<
 
     this.context.db
       .get(this.props.id, { conflicts: true })
-      .then((doc) => {
+      .then((doc: Doc) => {
         // If a conflict exists, load the current and the conflict and pass it along to our handler
         if (doc._conflicts) {
           this.context.db
             // Note: What happens when there is more than one conflict?
             .get(this.props.id, { rev: doc._conflicts[0] })
-            .then((conflict) => {
-              this.handleConflict(doc as Doc, conflict as Doc);
+            .then((conflict: Doc) => {
+              this.handleConflict(doc, conflict);
             });
         }
 
@@ -216,8 +214,8 @@ export class Document extends React.PureComponent<
           if (err.status === 409) {
             // Handle 'immediate' conflict
             // Do we still need to do this with our external handling?
-            this.context.db.get(this.props.id).then((original) => {
-              this.handleConflict(putData, original as Doc);
+            this.context.db.get(this.props.id).then((original: Doc) => {
+              this.handleConflict(putData, original);
             });
           }
           // This indicates a brand new document that we are creating, the document can be either 'missing' or 'deleted'
