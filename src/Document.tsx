@@ -143,12 +143,18 @@ export class Document extends React.PureComponent<
       )
       // Create a new object using the keyset and the original values
       // Note that the [key]: string type here basically states that every key on the object is a string
-      .reduce((obj: { [key: string]: unknown }, key: string): {
-        [key: string]: unknown;
-      } => {
-        obj[key] = doc[key];
-        return obj;
-      }, {});
+      .reduce(
+        (
+          obj: { [key: string]: unknown },
+          key: string
+        ): {
+          [key: string]: unknown;
+        } => {
+          obj[key] = doc[key];
+          return obj;
+        },
+        {}
+      );
 
     return data;
   }
