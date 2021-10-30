@@ -2,7 +2,8 @@ import React from "react";
 import PouchDB from "pouchdb";
 
 if (!window.setImmediate) {
-  window.setImmediate = window.setTimeout;
+  // This is as gross as it looks. It's a workaround for using PouchDB in tests.
+  window.setImmediate = window.setTimeout as unknown as typeof setImmediate;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
