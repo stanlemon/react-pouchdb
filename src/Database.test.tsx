@@ -1,16 +1,20 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-
+import { render, waitFor, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { Database } from "./Database";
+import { getPouchDb } from "./test-utils";
 
 test("<Database/> renders children", async (): Promise<void> => {
+  const db = await getPouchDb();
+
   const text = "Hello World";
   render(
-    <Database>
+    <Database database={db}>
       <h1>{text}</h1>
     </Database>
   );
 
-  const items = await screen.findAllByText(text);
-  expect(items).toHaveLength(1);
+  expect(screen.getByText(text)).toBeInTheDocument();
+
+  await waitFor(() => screen.getByText(text));
 });

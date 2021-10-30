@@ -6,11 +6,7 @@ import "@testing-library/jest-dom";
 import waitForExpect from "wait-for-expect";
 import { Database } from "./Database";
 import { withDocument, PuttableProps } from "./Document";
-
-window.setImmediate = window.setTimeout;
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-PouchDB.plugin(require("pouchdb-adapter-memory"));
+import { getPouchDb, Loading } from "./test-utils";
 
 class TestComponent extends React.Component<
   PuttableProps & { value?: string }
@@ -36,25 +32,6 @@ class TestComponent extends React.Component<
       </div>
     );
   }
-}
-
-function Loading(): React.FunctionComponentElement<null> {
-  return <div>Loading...</div>;
-}
-
-async function getPouchDb(): Promise<PouchDB.Database> {
-  // An existing database, we'll pass this into our component to be used
-  const db = new PouchDB("local", { adapter: "memory" });
-
-  // If the test document exists we're going to delete it before each test
-  try {
-    const doc = await db.get("test");
-    await db.remove(doc);
-  } catch (err) {
-    // Don't need to do anything
-  }
-
-  return db;
 }
 
 test("withDocument() renders wrapped component", async (): Promise<void> => {
