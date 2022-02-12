@@ -1,6 +1,6 @@
 {
   "name": "@stanlemon/react-pouchdb",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "React components for interacting with PouchDB.",
   "keywords": [
     "react",
@@ -50,8 +50,8 @@
     }
   },
   "peerDependencies": {
-    "pouchdb": ">=7.2.2",
-    "react": ">=17.0.2"
+    "pouchdb": ">=7.2.0",
+    "react": ">=16.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.2",
