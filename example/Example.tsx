@@ -16,7 +16,7 @@ function Example(): React.ReactElement {
         <hr />
 
         <h2>Using a higher order function:</h2>
-        <WrappedCounter loading={<div>Loading Counter...</div>} />
+        <WrappedCounter count={0} loading={<div>Loading Counter...</div>} />
         <br />
 
         <h2>Wrapping the component as a child:</h2>

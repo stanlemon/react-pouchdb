@@ -1,22 +1,18 @@
 import * as React from "react";
 import { PuttableProps } from "../src/Document";
 
-type CounterProps = PuttableProps & {
-  /**
-   * (Optional) Component's count, set this if you want to initialize a default.
-   */
-  count?: number;
-};
-
+type CounterProps = {
+  count: number;
+} & PuttableProps;
 /**
  * Counter application that tracks increment and decrement operations.
  */
 export class Counter extends React.Component<CounterProps> {
   static defaultProps = {
+    // Component's count, set this if you want to initialize a default.
     count: 0,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    putDocument: (state = {}): void => {
-      // do nothing.
+    putDocument: () => {
+      // Do nothing
     },
   };
 

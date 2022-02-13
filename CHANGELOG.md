@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 (February 12, 2022)
+
+* Major typescript updates.
+
 ## 0.2.0 (December 29, 2020)
 
 * Dependency updates and cleanup.

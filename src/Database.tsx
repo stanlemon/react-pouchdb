@@ -34,13 +34,17 @@ export interface DatabaseContextType {
   watchDocument(id: string, component: Document): void;
 }
 
-export interface Doc {
-  [key: string]: string;
-  _id?: string;
-  _rev?: string;
-}
+export type ExistingDoc = PouchDB.Core.ExistingDocument<
+  Record<string, unknown>
+> &
+  PouchDB.Core.AllDocsMeta;
 
-export const DatabaseContext = React.createContext<DatabaseContextType>(null);
+export type Doc = PouchDB.Core.Document<Record<string, unknown>> &
+  PouchDB.Core.AllDocsMeta;
+
+export const DatabaseContext = React.createContext<
+  DatabaseContextType | undefined
+>(undefined);
 
 /**
  * Component for using PouchDB with React components. In order to wrap a component in a <Document />
@@ -54,9 +58,9 @@ export class Database extends React.Component<DatabaseProps> {
 
   private db: PouchDB.Database;
 
-  private sync: PouchDB.Replication.Sync<Partial<Doc>>;
+  private sync: PouchDB.Replication.Sync<Partial<Doc>> | null = null;
 
-  private changes: PouchDB.Core.Changes<Partial<Doc>>;
+  private changes: PouchDB.Core.Changes<Partial<Doc>> | null = null;
 
   private watching: {
     // Id of the document to be watched
@@ -123,7 +127,7 @@ export class Database extends React.Component<DatabaseProps> {
         live: true,
         include_docs: true,
       })
-      .on("change", (change: PouchDB.Core.ChangesResponseChange<Doc>) => {
+      .on("change", (change) => {
         this.log("Received change = ", change);
 
         this.watching.forEach((watch) => {
@@ -134,29 +138,51 @@ export class Database extends React.Component<DatabaseProps> {
             return;
           }
 
+          // If we did not get a doc, skip over it
+          if (!change.doc) {
+            return;
+          }
+
           if (change.doc._conflicts) {
             // Handle conflict here
             this.db
               // Note: What happens when there is more than one conflict?
               .get(watch.id, { rev: change.doc._conflicts[0] })
               .then((conflict) => {
-                watch.component.handleConflict(change.doc, conflict as Doc);
+                watch.component.handleConflict(
+                  change.doc as ExistingDoc,
+                  conflict as ExistingDoc
+                );
               });
           }
 
           // If we don't have the revision for this change already (meaning it's likely external and not local) apply it
           if (watch.component.getRevision() !== change.doc._rev) {
             watch.component.setRevision(change.doc._rev);
-            watch.component.setDocument(change.doc);
+            watch.component.setDocument(change.doc as ExistingDoc);
           }
         });
       });
   }
 
+  private getSync() {
+    if (!this.sync) {
+      throw new Error("Sync is not setup");
+    }
+    return this.sync;
+  }
+
+  private getChanges() {
+    if (!this.changes) {
+      throw new Error("Change monitoring is not setup");
+    }
+    return this.changes;
+  }
+
   componentWillUnmount(): void {
     if (this.props.remote) {
-      this.sync.cancel();
-      this.changes.cancel();
+      this.getSync().cancel();
+      this.getChanges().cancel();
       this.watching = [];
     }
   }

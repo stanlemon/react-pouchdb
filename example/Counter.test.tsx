@@ -18,9 +18,9 @@ test("<Counter/> count can be set on the component", (): void => {
 });
 
 test("<Counter/> can be incremented with a button", (): void => {
-  let state: number;
+  let state = 0;
 
-  const putDocument = ({ count }: { count: number }): void => {
+  const putDocument = ({ count }: Record<string, number>): void => {
     state = count;
   };
 
@@ -34,9 +34,9 @@ test("<Counter/> can be incremented with a button", (): void => {
 });
 
 test("<Counter/> can be decremented with a button", (): void => {
-  let state: number;
+  let state = 0;
 
-  const putDocument = ({ count }: { count: number }): void => {
+  const putDocument = ({ count }: Record<string, number>): void => {
     state = count;
   };
 

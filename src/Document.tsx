@@ -1,34 +1,33 @@
 import * as React from "react";
-import { DatabaseContext, DatabaseContextType, Doc } from "./Database";
+import omit from "lodash/omit";
+import pick from "lodash/pick";
+import {
+  DatabaseContext,
+  DatabaseContextType,
+  Doc,
+  ExistingDoc,
+} from "./Database";
 import merge from "./merge";
-
-export interface DocumentIdProps {
-  id: string;
-}
 
 /**
  * Properties specific to the <Document/> component.
  */
-export interface DocumentProps {
-  /**
-   * If debug is enabled there is additional logging to the console.
-   */
+export type DocumentProps = {
+  id: string;
   debug?: boolean;
-  onConflict?(yours: Doc, theirs: Doc): Doc;
+  onConflict?: (yours: ExistingDoc, theirs: ExistingDoc) => ExistingDoc;
   loading?: React.ReactNode;
   children?: React.ReactChild;
   component?: React.ReactNode;
-}
+};
 
 export interface DocumentState {
-  rev: string | null;
+  rev?: string;
 
   data: Record<string, unknown>;
 
   initialized: boolean;
 }
-
-export type putDocument = (data: Record<string, unknown>) => void;
 
 /**
  * Wrapped components need a put property.
@@ -41,54 +40,65 @@ export interface PuttableProps {
    *
    * @param data Data to be put in both state and PouchDB.
    */
-  putDocument: putDocument;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  putDocument: (data: Record<string, any>) => void;
 }
 
 export interface DocumentContextType {
   id: string;
 }
 
-export const DocumentContext = React.createContext<DocumentContextType>(null);
+export const DocumentContext = React.createContext<
+  DocumentContextType | undefined
+>(undefined);
+
+type PassThruDocumentProps = Pick<
+  DocumentProps,
+  "debug" | "loading" | "onConflict"
+>;
 
 export function withDocument<P>(
   id: string,
-  WrappedComponent: React.ComponentType<P & PuttableProps>
-): React.FunctionComponent<P & DocumentProps> {
-  return (props: P & DocumentProps): React.ReactElement<P & DocumentProps> => (
-    <Document id={id} loading={props.loading}>
-      <WrappedComponent
-        // This property will get overwritten by <Document />
-        putDocument={(): void => {
-          /* do nothing */
-        }}
-        {...props}
-      />
-    </Document>
-  );
+  WrappedComponent: React.ComponentType<P>
+): React.FunctionComponent<Omit<P, "putDocument"> & PassThruDocumentProps> {
+  const documentPropKeys = ["debug", "loading", "onConflict"];
+  const DocumentComponent = (
+    props: Omit<P, "putDocument"> & PassThruDocumentProps
+  ) => {
+    const documentProps = pick(
+      "loading",
+      documentPropKeys
+    ) as PassThruDocumentProps;
+    const componentProps = omit(props, documentPropKeys) as P;
+    return (
+      <Document id={id} {...documentProps}>
+        <WrappedComponent {...componentProps} />
+      </Document>
+    );
+  };
+  return DocumentComponent;
 }
 
 export class Document extends React.PureComponent<
-  DocumentIdProps & DocumentProps,
+  DocumentProps,
   DocumentState,
   DatabaseContextType
 > {
   static contextType = DatabaseContext;
 
-  static defaultProps: DocumentProps = {
+  static defaultProps: Partial<DocumentProps> = {
     debug: false,
-    onConflict(yours: Doc, theirs: Doc): Doc {
+    onConflict(yours: ExistingDoc, theirs: ExistingDoc): ExistingDoc {
       // Shallow merge objects, giving preference to yours
-      return merge(theirs, yours) as Doc;
+      return merge(theirs, yours) as ExistingDoc;
     },
+    loading: <React.Fragment />,
   };
 
   state: DocumentState = {
-    rev: null,
     initialized: false,
     data: {},
   };
-
-  private db: PouchDB.Database;
 
   private log(...args: unknown[]): void {
     if (this.props.debug) {
@@ -100,7 +110,7 @@ export class Document extends React.PureComponent<
   /**
    * Get the revision of the current PouchDB document.
    */
-  getRevision(): string {
+  getRevision(): string | undefined {
     return this.state.rev;
   }
 
@@ -165,13 +175,13 @@ export class Document extends React.PureComponent<
 
     this.context.db
       .get(this.props.id, { conflicts: true })
-      .then((doc: Doc) => {
+      .then((doc: ExistingDoc) => {
         // If a conflict exists, load the current and the conflict and pass it along to our handler
         if (doc._conflicts) {
           this.context.db
             // Note: What happens when there is more than one conflict?
             .get(this.props.id, { rev: doc._conflicts[0] })
-            .then((conflict: Doc) => {
+            .then((conflict: ExistingDoc) => {
               this.handleConflict(doc, conflict);
             });
         }
@@ -204,7 +214,7 @@ export class Document extends React.PureComponent<
     const putData = {
       ...{ _id: this.props.id, ...data },
       ...(this.state.rev !== null ? { _rev: this.state.rev } : {}),
-    };
+    } as Doc;
 
     this.context.db
       .put(putData)
@@ -220,8 +230,8 @@ export class Document extends React.PureComponent<
           if (err.status === 409) {
             // Handle 'immediate' conflict
             // Do we still need to do this with our external handling?
-            this.context.db.get(this.props.id).then((original: Doc) => {
-              this.handleConflict(putData, original);
+            this.context.db.get(this.props.id).then((original: ExistingDoc) => {
+              this.handleConflict(putData as ExistingDoc, original);
             });
           }
           // This indicates a brand new document that we are creating, the document can be either 'missing' or 'deleted'
@@ -232,15 +242,22 @@ export class Document extends React.PureComponent<
       );
   };
 
-  private _putDocument = (data: Doc): Promise<PouchDB.Core.Response> => {
+  private _putDocument = (
+    data: Doc | ExistingDoc
+  ): Promise<PouchDB.Core.Response> => {
     return this.context.db.put(data).then((response: PouchDB.Core.Response) => {
       this.setRevision(response.rev);
       return response;
     });
   };
 
-  handleConflict(yours: Doc, theirs: Doc): void {
+  handleConflict(yours: ExistingDoc, theirs: ExistingDoc): void {
     this.log("Document Conflict (yours, theirs)", yours, theirs);
+
+    // There is no conflict handler, so nothing to do
+    if (!this.props.onConflict) {
+      return;
+    }
 
     const winningRev = yours._rev > theirs._rev ? yours._rev : theirs._rev;
     const losingRev = yours._rev < theirs._rev ? yours._rev : theirs._rev;
@@ -268,12 +285,7 @@ export class Document extends React.PureComponent<
   }
 
   render(): React.ReactNode {
-    // If we haven't initialized the document yet and don't have a loading component
-    if (!this.state.initialized && !this.props.loading) {
-      return <React.Fragment />;
-    }
-
-    // If we haven't initialized the document yet return the loading component
+    // If we haven't initialized the document yet
     if (!this.state.initialized) {
       return this.props.loading;
     }

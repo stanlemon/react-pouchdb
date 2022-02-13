@@ -5,14 +5,18 @@ import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import waitForExpect from "wait-for-expect";
 import { Database } from "./Database";
-import { withDocument, PuttableProps } from "./Document";
+import { Document, withDocument, PuttableProps } from "./Document";
 import { getPouchDb, Loading } from "./test-utils";
 
-class TestComponent extends React.Component<
-  PuttableProps & { value?: string }
-> {
+type TestComponentProps = {
+  value?: string;
+} & PuttableProps;
+class TestComponent extends React.Component<TestComponentProps> {
   static defaultProps = {
     value: "",
+    putDocument: () => {
+      return;
+    },
   };
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -34,6 +38,22 @@ class TestComponent extends React.Component<
   }
 }
 
+test("Wrapped component renders", async (): Promise<void> => {
+  const Test = (
+    <Database>
+      <Document id="test">
+        <TestComponent value="Hello World" />
+      </Document>
+    </Database>
+  );
+  render(Test);
+
+  await waitFor(() => screen.getByText("Test Component"));
+
+  const input = screen.getByRole("textbox");
+  expect(input).toHaveValue("Hello World");
+});
+
 test("withDocument() renders wrapped component", async (): Promise<void> => {
   // Add some initial state to our document, this should get loaded into the component
   const db = await getPouchDb();
@@ -47,8 +67,6 @@ test("withDocument() renders wrapped component", async (): Promise<void> => {
       <Test loading={<Loading />} />
     </Database>
   );
-
-  expect(screen.getByText("Loading...")).toBeInTheDocument();
 
   await waitFor(() => screen.getByText("Test Component"));
 
