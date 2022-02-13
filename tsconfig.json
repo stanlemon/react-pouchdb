@@ -3,6 +3,7 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
+    "outDir": "./dist",
     "target": "esnext",
     "lib": [
       "dom",
@@ -20,7 +21,14 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx"
-  }
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "./src/**/*.test.*",
+    "./src/test-utils*"
+  ]
 }
