@@ -3,9 +3,10 @@
     "config:base",
     "group:allNonMajor"
   ],
+  "timezone": "America/Indiana/Indianapolis",
   "rangeStrategy": "bump",
   "schedule": [
-    "after 8am and before 5pm on Thursday"
+    "after 10am and before 4pm on Saturday"
   ],
   "packageRules": [
     {
@@ -15,13 +16,27 @@
       "enabled": false
     },
     {
+      "matchDatasources": [
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchDatasources": [
+        "npm"
+      ],
       "matchUpdateTypes": [
         "minor",
         "patch",
         "pin",
         "digest"
       ],
-      "automerge": true
+      "automerge": true,
+      "automergeType": "branch"
     }
   ]
 }
