@@ -79,7 +79,7 @@ export class Database extends React.Component<DatabaseProps> {
       typeof this.props.database === "object" &&
       this.props.database.constructor.name === "PouchDB"
     ) {
-      this.db = this.props.database as PouchDB.Database;
+      this.db = this.props.database;
     } else {
       this.db = new PouchDB(this.props.database as string);
     }
@@ -155,7 +155,8 @@ export class Database extends React.Component<DatabaseProps> {
                   change.doc as ExistingDoc,
                   conflict as ExistingDoc
                 );
-              });
+              })
+              .catch((err) => console.error(err));
           }
 
           // If we don't have the revision for this change already (meaning it's likely external and not local) apply it

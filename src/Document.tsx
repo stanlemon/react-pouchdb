@@ -184,7 +184,8 @@ export class Document extends React.PureComponent<
             .get(this.props.id, { rev: doc._conflicts[0] })
             .then((conflict) => {
               this.handleConflict(doc as ExistingDoc, conflict as ExistingDoc);
-            });
+            })
+            .catch((err) => console.error(err));
         }
 
         this.setRevision(doc._rev);
@@ -231,12 +232,15 @@ export class Document extends React.PureComponent<
           if (err.status === 409) {
             // Handle 'immediate' conflict
             // Do we still need to do this with our external handling?
-            this.context?.db.get(this.props.id).then((original) => {
-              this.handleConflict(
-                putData as ExistingDoc,
-                original as ExistingDoc
-              );
-            });
+            this.context?.db
+              .get(this.props.id)
+              .then((original) => {
+                this.handleConflict(
+                  putData as ExistingDoc,
+                  original as ExistingDoc
+                );
+              })
+              .catch((err) => console.error(err));
           }
           // This indicates a brand new document that we are creating, the document can be either 'missing' or 'deleted'
           if (err.status === 404) {
@@ -247,10 +251,13 @@ export class Document extends React.PureComponent<
   };
 
   private _putDocument = (data: Doc | ExistingDoc) => {
-    return this.context?.db.put(data).then((response) => {
-      this.setRevision(response?.rev);
-      return response;
-    });
+    this.context?.db
+      .put(data)
+      .then((response) => {
+        this.setRevision(response?.rev);
+        return response;
+      })
+      .catch((err) => console.error(err));
   };
 
   handleConflict(yours: ExistingDoc, theirs: ExistingDoc): void {
@@ -266,21 +273,25 @@ export class Document extends React.PureComponent<
     const result = this.extractDocument(this.props.onConflict(yours, theirs));
 
     // Delete the conflicting document forcefully
-    this.context?.db.put(
-      {
-        _deleted: true,
-        _id: this.props.id,
-        _rev: losingRev,
-      },
-      { force: true } // Force the delete
-    );
+    this.context?.db
+      .put(
+        {
+          _deleted: true,
+          _id: this.props.id,
+          _rev: losingRev,
+        },
+        { force: true } // Force the delete
+      )
+      .catch((err) => console.error(err));
 
     // Put the new merge document in
-    this.context?.db.put({
-      ...result,
-      _id: this.props.id,
-      _rev: winningRev,
-    });
+    this.context?.db
+      .put({
+        ...result,
+        _id: this.props.id,
+        _rev: winningRev,
+      })
+      .catch((err) => console.error(err));
 
     // Update our state after the conflict
     this.setDocument(result);

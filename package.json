@@ -1,6 +1,6 @@
 {
   "name": "@stanlemon/react-pouchdb",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "React components for interacting with PouchDB.",
   "keywords": [
     "react",
@@ -13,79 +13,31 @@
     "type": "git",
     "url": "https://github.com:stanlemon/react-pouchdb-document"
   },
-  "main": "./dist/index.js",
-  "files": [
-    "dist/"
-  ],
+  "type": "module",
+  "exports": "./dist/index.js",
   "scripts": {
     "test": "jest",
-    "watch": "tsc -d -w",
-    "build": "rm -rf ./dist/** && tsc -d",
+    "test:watch": "jest -w",
+    "test:coverage": "jest --coverage",
     "lint": "eslint --ext js,jsx,ts,tsx ./src/ ./example/",
-    "example": "webpack serve"
-  },
-  "browserslist": [
-    "last 1 year, not dead",
-    "edge > 18",
-    "not ie 11",
-    "not ie_mob 11",
-    "not samsung < 1000",
-    "not opera < 1000",
-    "not kaios < 1000",
-    "not android < 1000",
-    "not and_qq < 1000"
-  ],
-  "jest": {
-    "testEnvironment": "jsdom",
-    "roots": [
-      "./src/",
-      "./example/"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/out/"
-    ],
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)?$": "babel-jest"
-    }
+    "lint:format": "eslint --fix --ext js,jsx,ts,tsx ./src/ ./example/",
+    "build": "rm -rf ./dist/** && tsc",
+    "example": "WEBDEV_ENTRY=./example/Example.tsx webpack serve"
   },
   "peerDependencies": {
-    "pouchdb": ">=7.2.2",
-    "react": ">=18.0.0"
+    "pouchdb": ">=7.1.0",
+    "react": ">=17.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.9",
-    "@babel/plugin-proposal-class-properties": "^7.16.7",
-    "@babel/preset-env": "^7.16.11",
-    "@babel/preset-react": "^7.16.7",
-    "@babel/preset-typescript": "^7.16.7",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.0.0",
-    "@types/jest": "^27.4.1",
-    "@types/lodash.merge": "^4.6.6",
+    "@stanlemon/webdev": "^0.1.29",
+    "@types/lodash": "^4.14.181",
+    "@types/node": "^15.14.9",
     "@types/pouchdb": "^6.4.0",
-    "@types/react": "^18.0.3",
-    "@types/react-dom": "^18.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.18.0",
-    "@typescript-eslint/parser": "^5.18.0",
-    "babel-jest": "^27.5.1",
-    "babel-loader": "^8.2.4",
-    "eslint": "^8.13.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-jest": "^26.1.4",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.29.4",
-    "html-webpack-plugin": "^5.5.0",
-    "jest": "^27.5.1",
     "pouchdb": "^7.2.2",
     "pouchdb-adapter-memory": "^7.2.2",
-    "prettier": "^2.6.2",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "typescript": "^4.6.3",
-    "wait-for-expect": "^3.0.2",
-    "webpack": "^5.72.0",
-    "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.8.1"
+    "wait-for-expect": "^3.0.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }
