@@ -16,6 +16,12 @@
       "enabled": false
     },
     {
+      "packageNames": [
+        "@types/node"
+      ],
+      "enabled": false
+    },
+    {
       "matchDepTypes": [
         "peerDependencies"
       ],
