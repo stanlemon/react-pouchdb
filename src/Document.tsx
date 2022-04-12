@@ -85,6 +85,7 @@ export class Document extends React.PureComponent<
   DatabaseContextType
 > {
   static contextType = DatabaseContext;
+  declare context: React.ContextType<typeof DatabaseContext>;
 
   static defaultProps: Partial<DocumentProps> = {
     debug: false,
@@ -171,18 +172,18 @@ export class Document extends React.PureComponent<
 
   componentDidMount(): void {
     // Add our current document to the ones we are watching
-    this.context.watchDocument(this.props.id, this);
+    this.context?.watchDocument(this.props.id, this);
 
-    this.context.db
+    this.context?.db
       .get(this.props.id, { conflicts: true })
-      .then((doc: ExistingDoc) => {
+      .then((doc) => {
         // If a conflict exists, load the current and the conflict and pass it along to our handler
         if (doc._conflicts) {
-          this.context.db
+          this.context?.db
             // Note: What happens when there is more than one conflict?
             .get(this.props.id, { rev: doc._conflicts[0] })
-            .then((conflict: ExistingDoc) => {
-              this.handleConflict(doc, conflict);
+            .then((conflict) => {
+              this.handleConflict(doc as ExistingDoc, conflict as ExistingDoc);
             });
         }
 
@@ -216,7 +217,7 @@ export class Document extends React.PureComponent<
       ...(this.state.rev !== null ? { _rev: this.state.rev } : {}),
     } as Doc;
 
-    this.context.db
+    this.context?.db
       .put(putData)
       .then((response: PouchDB.Core.Response) => {
         this.setRevision(response.rev);
@@ -230,23 +231,24 @@ export class Document extends React.PureComponent<
           if (err.status === 409) {
             // Handle 'immediate' conflict
             // Do we still need to do this with our external handling?
-            this.context.db.get(this.props.id).then((original: ExistingDoc) => {
-              this.handleConflict(putData as ExistingDoc, original);
+            this.context?.db.get(this.props.id).then((original) => {
+              this.handleConflict(
+                putData as ExistingDoc,
+                original as ExistingDoc
+              );
             });
           }
           // This indicates a brand new document that we are creating, the document can be either 'missing' or 'deleted'
           if (err.status === 404) {
-            this._putDocument({ _id: this.props.id, ...data });
+            this._putDocument({ _id: this.props.id, ...data } as ExistingDoc);
           }
         }
       );
   };
 
-  private _putDocument = (
-    data: Doc | ExistingDoc
-  ): Promise<PouchDB.Core.Response> => {
-    return this.context.db.put(data).then((response: PouchDB.Core.Response) => {
-      this.setRevision(response.rev);
+  private _putDocument = (data: Doc | ExistingDoc) => {
+    return this.context?.db.put(data).then((response) => {
+      this.setRevision(response?.rev);
       return response;
     });
   };
@@ -264,7 +266,7 @@ export class Document extends React.PureComponent<
     const result = this.extractDocument(this.props.onConflict(yours, theirs));
 
     // Delete the conflicting document forcefully
-    this.context.db.put(
+    this.context?.db.put(
       {
         _deleted: true,
         _id: this.props.id,
@@ -274,7 +276,7 @@ export class Document extends React.PureComponent<
     );
 
     // Put the new merge document in
-    this.context.db.put({
+    this.context?.db.put({
       ...result,
       _id: this.props.id,
       _rev: winningRev,

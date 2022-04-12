@@ -34,17 +34,19 @@ export interface DatabaseContextType {
   watchDocument(id: string, component: Document): void;
 }
 
-export type ExistingDoc = PouchDB.Core.ExistingDocument<
-  Record<string, unknown>
-> &
-  PouchDB.Core.AllDocsMeta;
-
-export type Doc = PouchDB.Core.Document<Record<string, unknown>> &
-  PouchDB.Core.AllDocsMeta;
-
 export const DatabaseContext = React.createContext<
   DatabaseContextType | undefined
 >(undefined);
+
+export type ExistingDoc = PouchDB.Core.ExistingDocument<
+  Record<string, unknown>
+> &
+  PouchDB.Core.GetMeta &
+  PouchDB.Core.IdMeta;
+
+export type Doc = PouchDB.Core.Document<Record<string, unknown>> &
+  PouchDB.Core.GetMeta &
+  PouchDB.Core.IdMeta;
 
 /**
  * Component for using PouchDB with React components. In order to wrap a component in a <Document />

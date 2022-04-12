@@ -8,9 +8,10 @@ interface Props {
 
 export class Aware extends React.Component<Props> {
   static contextType = DatabaseContext;
+  declare context: React.ContextType<typeof DatabaseContext>;
 
   render(): React.ReactNode {
-    const db = this.context.db;
+    const db = this.context?.db;
 
     if (React.isValidElement(this.props.children)) {
       return React.cloneElement(
