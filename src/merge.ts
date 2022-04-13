@@ -9,6 +9,7 @@ export default function merge(
     // If both sides are arrays merge them
     if (a && Array.isArray(a[key]) && Array.isArray(value)) {
       // TODO: Need to deep merge objects?
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       c[key] = [...(a[key] as []), ...value];
     } else if (
       !Array.isArray(value) &&

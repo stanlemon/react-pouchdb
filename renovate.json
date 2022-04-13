@@ -16,6 +16,18 @@
       "enabled": false
     },
     {
+      "packageNames": [
+        "@types/node"
+      ],
+      "enabled": false
+    },
+    {
+      "matchDepTypes": [
+        "peerDependencies"
+      ],
+      "rangeStrategy": "widen"
+    },
+    {
       "matchDatasources": [
         "npm"
       ],

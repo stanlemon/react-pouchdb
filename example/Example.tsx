@@ -1,5 +1,4 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { Database, Document, withDocument } from "../src";
 import { Counter } from "./Counter";
 
@@ -32,4 +31,7 @@ function Example(): React.ReactElement {
   );
 }
 
-ReactDOM.render(<Example />, document.getElementById("root"));
+const root = createRoot(
+  document.body.appendChild(document.createElement("div"))
+);
+root.render(<Example />);
