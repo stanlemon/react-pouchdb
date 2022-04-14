@@ -1,6 +1,6 @@
 {
   "name": "@stanlemon/react-pouchdb",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "React components for interacting with PouchDB.",
   "keywords": [
     "react",
@@ -17,6 +17,7 @@
   "exports": {
     ".": "./dist/index.js"
   },
+  "types": "./dist/index.d.ts",
   "files": [
     "dist/"
   ],
