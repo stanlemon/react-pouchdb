@@ -1,6 +1,6 @@
 {
   "name": "@stanlemon/react-pouchdb",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "React components for interacting with PouchDB.",
   "keywords": [
     "react",
@@ -14,7 +14,12 @@
     "url": "https://github.com:stanlemon/react-pouchdb-document"
   },
   "type": "module",
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "test": "jest",
     "test:watch": "jest -w",
