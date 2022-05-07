@@ -35,7 +35,7 @@
     "react": ">=17.0.0"
   },
   "devDependencies": {
-    "@stanlemon/webdev": "^0.1.33",
+    "@stanlemon/webdev": "^0.1.43",
     "@types/lodash": "^4.14.182",
     "@types/node": "^15.14.9",
     "@types/pouchdb": "^6.4.0",
